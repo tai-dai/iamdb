@@ -21,14 +21,12 @@ public class ListController {
 
     public ListController() {
         columnChoices.put("all", "All");
-        columnChoices.put("name", "Name");
         columnChoices.put("origin", "Origin");
         columnChoices.put("director", "Director");
         columnChoices.put("cast", "Actors");
         columnChoices.put("genre", "Genre");
 
         tableChoices.put("all", "All");
-        tableChoices.put("name", "Name");
         tableChoices.put("origin", MovieData.getAllOrigins());
         tableChoices.put("director", MovieData.getAllDirectors());
         tableChoices.put("actor", MovieData.getAllActors());
