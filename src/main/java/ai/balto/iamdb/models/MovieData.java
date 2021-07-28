@@ -181,7 +181,7 @@ public class MovieData {
         }
     }
 
-    public static void addMovie(int year, String name, String origin, String directors, String actors, String genres, String wiki, String plot){
+    public static void addMovie(String year, String name, String origin, String directors, String actors, String genres, String wiki, String plot){
         Origin newOrigin = (Origin) findExistingObject(allOrigins, origin);
         if (newOrigin == null){
             newOrigin = new Origin(origin);
@@ -192,7 +192,7 @@ public class MovieData {
         ArrayList<Actor> cast = actorCleanup(actors);
         ArrayList<Genre> filmsGenres = genreCleanup(genres);
 
-        Movie newMovie = new Movie(year, name, newOrigin, filmsDirectors, cast, filmsGenres, wiki, plot);
+        Movie newMovie = new Movie(Integer.parseInt(year), name, newOrigin, filmsDirectors, cast, filmsGenres, wiki, plot);
 
         movies.add(newMovie);
     }
