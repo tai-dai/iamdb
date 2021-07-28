@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+
+<head th:fragment="head">
+
+    <!-- Bootstrap stylesheets and script -->
+    <link th:href="@{/css/bootstrap.css}" rel="stylesheet" />
+    <script type="text/javascript" th:src="@{/js/bootstrap.js}"></script>
+
+    <title th:text="'IaMDB' + ${title == null ? '' : ' :: ' + title}">IaMDB</title>
+</head>
+
+<body>
+
+<div th:fragment="page-header" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a th:href="@{/}" class="navbar-brand">IaMDB</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a th:href="@{/search}">Search</a></li>
+                <li><a th:href="@{/list}">List</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<table th:fragment = "movie-table" class = "movie-listing" th:each = "movie : ${movies}">
+    <tr>
+        <td th:text = "${#strings.toUpperCase('name: ')}"></td>
+        <td th:text = ${movie.getName()}></td>
+    </tr>
+    <tr>
+        <td th:text = "${#strings.toUpperCase('year: ')}"></td>
+        <td>
+            <a th:href = "@{/list/movies?column=year&(value=${movie.getYear()})}" th:text = ${movie.getYear()}></a>
+        </td>
+    </tr>
+    <tr>
+        <td th:text = "${#strings.toUpperCase('place of origin: ')}"></td>
+        <td>
+            <a th:href = "@{/list/movies?column=origin&(value=${movie.getOrigin()})}" th:text = ${movie.getOrigin()}></a>
+        </td>
+    </tr>
+    <tr>
+        <td th:text = "${#strings.toUpperCase('director: ')}"></td>
+        <td>
+            <a th:href = "@{/list/movies?column=director&(value=${movie.getDirector()})}" th:text = ${movie.getDirector()}></a>
+        </td>
+    </tr>
+    <tr>
+        <td th:text = "${#strings.toUpperCase('cast: ')}"></td>
+        <td>
+            <a th:href = "@{/list/movies?column=cast&(value=${movie.getCast()})}" th:text = ${movie.getCast()}></a>
+        </td>
+    </tr>
+    <tr>
+        <td th:text = "${#strings.toUpperCase('genre: ')}"></td>
+        <td>
+            <a th:href = "@{/list/movies?column=genre&(value=${movie.getGenre()})}" th:text = ${movie.getGenre()}></a>
+        </td>
+    </tr>
+    <tr>
+        <td th:text = "${#strings.toUpperCase('wiki page: ')}"></td>
+        <td>
+            <a th:href = "@{${movie.getWiki()}}" th:text = ${movie.getWiki()}></a>
+        </td>
+    </tr>
+    <tr>
+        <td th:text = "${#strings.toUpperCase('plot: ')}"></td>
+        <td th:text = ${movie.getPlot()}>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <form>
+<!--                TODO get template to send id to controller-->
+<!--                <input id="movieId" th:field="${movie.getId()}" type="hidden"/>-->
+                <button type="button" class="btn btn-success"><i class="glyphicon-edit:before"></i></button>
+                <button type="button" class="btn btn-danger"><i class="glyphicon-trash:before"></i></button>
+            </form>
+        </td>
+    </tr>
+
+
+</table>
+</body>
+</html>

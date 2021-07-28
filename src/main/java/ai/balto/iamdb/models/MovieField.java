@@ -17,7 +17,7 @@ public class MovieField {
         this.type = type;
     }
 
-    //Overrride methods
+    //Override methods
     @Override
     public String toString() { return type; }
 

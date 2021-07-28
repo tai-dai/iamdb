@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head">
+</head>
+<body>
+
+<div th:replace="fragments :: page-header"></div>
+
+<div class="container body-content">
+
+  <h1 th:text="${#strings.capitalizeWords(title)}"></h1>
+
+  <div th:replace = "fragments :: movie-table"></div>
+
+</div>
+
+</body>
+</html>

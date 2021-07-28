@@ -22,6 +22,7 @@ public class MovieData {
     private static boolean isDataLoaded = false;
 
     private static ArrayList<Movie> movies;
+    private static ArrayList<String> allNames = new ArrayList<>();
     private static ArrayList<Origin> allOrigins = new ArrayList<>();
     private static ArrayList<Director> allDirectors = new ArrayList<>();
     private static ArrayList<Actor> allActors = new ArrayList<>();
@@ -52,7 +53,7 @@ public class MovieData {
         }
         for (Movie movie : movies) {
 
-            String aType = getFieldType(movie, column);
+            String aType = getFieldValue(movie, column);
 
             if (aType != null && aType.toLowerCase().contains(value.toLowerCase())) {
                 someMovies.add(movie);
@@ -62,19 +63,20 @@ public class MovieData {
         return someMovies;
     }
 
-    public static String getFieldType(Movie movie, String fieldName){
+    public static String getFieldValue(Movie movie, String value){
         String theValue;
-        if (fieldName.equals("name")){
+        if (value.equals("name")){
             theValue = movie.getName();
-        } else if (fieldName.equals("year")){
+//            TODO add year search functionality
+        } else if (value.equals("year")){
             theValue = String.valueOf(movie.getYear());
-        } else if (fieldName.equals("origin")){
+        } else if (value.equals("origin")){
             theValue = movie.getOrigin().toString();
-        } else if (fieldName.equals("director")){
+        } else if (value.equals("director")){
             theValue = movie.getDirector().toString();
-        } else if (fieldName.equals("cast")){
+        } else if (value.equals("cast")){
             theValue = movie.getCast().toString();
-        } else if (fieldName.equals("genre")){
+        } else if (value.equals("genre")){
             theValue = movie.getGenre().toString();
         } else {
             theValue = movie.getPlot();
@@ -151,7 +153,7 @@ public class MovieData {
                 String anOrigin = record.get(2);
                 String directors = record.get(3);
                 String actors = record.get(4);
-                String aGenre = record.get(5);
+                String genres = record.get(5);
                 String aWiki = record.get(6);
                 String aPlot = record.get(7);
 
@@ -161,45 +163,11 @@ public class MovieData {
                     allOrigins.add(newOrigin);
                 }
 
-                Genre newGenre = (Genre) findExistingObject(allGenres, aGenre);
-                if (newGenre == null){
-                    newGenre = new Genre(aGenre);
-                    allGenres.add(newGenre);
-                }
+                ArrayList<Director> filmsDirectors = directorCleanup(directors);
+                ArrayList<Actor> cast = actorCleanup(actors);
+                ArrayList<Genre> filmsGenres = genreCleanup(genres);
 
-                //Splits translated strings into individual directors
-                //TODO: also split at "and"
-                String[] stringDirectors = directors.split(", ");
-                ArrayList<String> someDirectors = (ArrayList<String>) Arrays.asList(stringDirectors);
-                ArrayList<Director> filmsDirectors = new ArrayList<>();
-                for (String aDirector : someDirectors){
-                    Director newDirector;
-                    newDirector= (Director) findExistingObject(allDirectors, aDirector);
-
-                    if (newDirector == null){
-                        newDirector = new Director(aDirector);
-                        allDirectors.add(newDirector);
-                    }
-                    filmsDirectors.add(newDirector);
-                }
-
-                //Splits translated strings into individual actors
-                //TODO: also split at "and"
-                String[] stringActors = actors.split(", ");
-                ArrayList<String> someActors = (ArrayList<String>) Arrays.asList(stringActors);
-                ArrayList<Actor> cast = new ArrayList<>();
-                for (String anActor : someActors){
-                    Actor newActor;
-                    newActor = (Actor) findExistingObject(allActors, anActor);
-
-                    if (newActor == null){
-                        newActor = new Actor(anActor);
-                        allActors.add(newActor);
-                    }
-                    cast.add(newActor);
-                }
-
-                Movie newMovie = new Movie(Integer.getInteger(aYear), aName, newOrigin, filmsDirectors, cast, newGenre, aWiki, aPlot);
+                Movie newMovie = new Movie(Integer.parseInt(aYear), aName, newOrigin, filmsDirectors, cast, filmsGenres, aWiki, aPlot);
 
                 movies.add(newMovie);
             }
@@ -211,6 +179,28 @@ public class MovieData {
             System.out.println("Failed to load job data");
             e.printStackTrace();
         }
+    }
+
+    public static void addMovie(int year, String name, String origin, String directors, String actors, String genres, String wiki, String plot){
+        Origin newOrigin = (Origin) findExistingObject(allOrigins, origin);
+        if (newOrigin == null){
+            newOrigin = new Origin(origin);
+            allOrigins.add(newOrigin);
+        }
+
+        ArrayList<Director> filmsDirectors = directorCleanup(directors);
+        ArrayList<Actor> cast = actorCleanup(actors);
+        ArrayList<Genre> filmsGenres = genreCleanup(genres);
+
+        Movie newMovie = new Movie(year, name, newOrigin, filmsDirectors, cast, filmsGenres, wiki, plot);
+
+        movies.add(newMovie);
+    }
+
+    public static ArrayList<String> getAllNames() {
+        loadData();
+        allNames.sort(new NameSorter());
+        return allNames;
     }
 
     public static ArrayList<Origin> getAllOrigins() {
@@ -235,5 +225,66 @@ public class MovieData {
         loadData();
         allGenres.sort(new NameSorter());
         return allGenres;
+    }
+
+    //TODO dry this code out and make em 1 whole heccin method
+    public static ArrayList<Director> directorCleanup(String directors){
+        String cleanDirectors = directors.replace(" and ", ", ");
+        String[] stringDirectors = cleanDirectors.split(", ");
+        ArrayList<String> someDirectors = new ArrayList<>(Arrays.asList(stringDirectors));
+        ArrayList<Director> filmsDirectors = new ArrayList<>();
+        for (String aDirector : someDirectors){
+            Director newDirector;
+            newDirector= (Director) findExistingObject(allDirectors, aDirector);
+
+            if (newDirector == null){
+                newDirector = new Director(aDirector);
+                allDirectors.add(newDirector);
+            }
+            filmsDirectors.add(newDirector);
+        }
+        return filmsDirectors;
+    }
+
+    public static ArrayList<Actor> actorCleanup(String actors){
+        String cleanActors = actors.replace(" and ", ", ");
+        String[] stringActors = cleanActors.split(", ");
+        ArrayList<String> someActors = new ArrayList<>(Arrays.asList(stringActors));
+        ArrayList<Actor> cast = new ArrayList<>();
+        for (String anActor : someActors){
+            Actor newActor;
+            newActor = (Actor) findExistingObject(allActors, anActor);
+
+            if (newActor == null){
+                newActor = new Actor(anActor);
+                allActors.add(newActor);
+            }
+            cast.add(newActor);
+        }
+        return cast;
+    }
+
+    public static ArrayList<Genre> genreCleanup(String genres){
+        if (genres == "" || genres == "-"){
+            genres = "unknown";
+        }
+        String cleanGenres = genres.replace(" / ", ", ");
+        String cleanerGenres = cleanGenres.replace("/", ", ");
+        String[] stringGenres = cleanerGenres.split(", ");
+        ArrayList<String> someGenres = new ArrayList<>(Arrays.asList(stringGenres));
+        ArrayList<Genre> filmsGenres = new ArrayList<>();
+
+        for (String aGenre : someGenres){
+            Genre newGenre;
+
+            newGenre = (Genre) findExistingObject(allGenres, aGenre);
+
+            if (newGenre == null){
+                newGenre = new Genre(aGenre);
+                allGenres.add(newGenre);
+            }
+            filmsGenres.add(newGenre);
+        }
+        return filmsGenres;
     }
 }
