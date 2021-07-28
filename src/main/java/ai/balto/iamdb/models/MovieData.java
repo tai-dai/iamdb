@@ -197,6 +197,14 @@ public class MovieData {
         movies.add(newMovie);
     }
 
+    public static void deleteMovie(int id){
+        for (Movie movie: movies){
+            if (movie.getId() == id){
+                movies.remove(movie);
+            }
+        }
+    }
+
     public static ArrayList<String> getAllNames() {
         loadData();
         allNames.sort(new NameSorter());

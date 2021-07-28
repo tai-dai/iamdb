@@ -10,6 +10,7 @@ import ai.balto.iamdb.models.MovieData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 
 @Controller
@@ -50,6 +51,10 @@ public class ListController {
     @RequestMapping(value = "movies")
     public String listMoviesByColumnAndValue(Model model, @RequestParam String column, @RequestParam String value) {
         ArrayList<Movie> movies;
+
+        //TODO take in optional id
+        //MovieData.deleteMovie(id);
+
         if (column.toLowerCase().equals("all")) {
             movies = MovieData.findAll();
             model.addAttribute("title", "All Movies");
